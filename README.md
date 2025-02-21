@@ -1,17 +1,17 @@
 # Análise e Limpeza de Dados de Questionário de Visitas Domiciliares no Rio de Janeiro
 
-Este projeto tem como objetivo analisar, estruturar e transformar dados fornecidos em um arquivo que contém um questionário preenchido por agentes de saúde durante visitas domiciliares aos pacientes. Os dados fornecem informações cadastrais cruciais para entender o perfil de cada família e são atualizados constantemente ao longo do acompanhamento dos pacientes pela CF/CMS.
-
 Este repositório foi desenvolvido para o **desafio para a vaga de Cientista de Dados** da **Diretoria de Inovação e Tecnologia da Prefeitura do Rio**, na área da saúde.
+
+O desafio desse projeto consiste em analisar, estruturar e transformar dados fornecidos em um arquivo que contém diversas entradas dos questionários preenchidos por agentes de saúde durante visitas domiciliares aos pacientes. Os dados fornecem informações cadastrais cruciais para entender o perfil de cada família e são atualizados constantemente ao longo do acompanhamento dos pacientes pela CF/CMS. Para uma introdução aos dados, consultar o arquivo ```descricao_de_campos.xlsx```. O sumário do que se espera para o projeto se encontra no arquivo ```Desafio Vaga de Cientista de Dados.docx```.
 
 ## Objetivo 🎯
 
-O objetivo deste projeto é processar esses dados brutos (raw), identificar e corrigir erros, e transformar o conjunto de dados em um formato mais adequado para análise. A ideia original é usar `dbt` para levar as queries do `Python` para `SQL`, utilizando algum banco de dados como nuvem. No entanto, essa etapa ainda está em andamento. Por outro lado, toda a análise e limpeza já foram feitas inteiramente em `Python`.
+O objetivo deste projeto é detectar problemas em cada coluna da tabela fornecida, ponderar sobre a causa do problema e resolvê-los usando ```Python``` e, posteriormente, ```dbt```.
 
 ## Estrutura do Projeto 📦
 
 ### 1. **`cleaning.py`**
-Esse arquivo contém a resolução completa do processo de limpeza e transformação dos dados. Nele, realizamos as seguintes etapas:
+Esse arquivo contém a resolução completa do processo de limpeza e transformação dos dados. Nele, realizei as seguintes etapas:
 - Identificação e tratamento de erros nos dados
 - Conversão de valores de variáveis para formatos adequados
 - Criação de novas variáveis, quando necessário
