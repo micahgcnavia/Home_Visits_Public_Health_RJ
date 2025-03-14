@@ -2,7 +2,7 @@
 
 Este repositório foi inicialmente criado para um **desafio para a vaga de Cientista de Dados** da **Diretoria de Inovação e Tecnologia da Prefeitura do Rio**, na área da saúde. No entanto, aproveitei a oportunidade para ir além e implementar análises estatísticas após a limpeza e tratamento dos dados.
 
-O desafio inicial consistia em analisar, estruturar e transformar dados fornecidos em um arquivo que contém diversas entradas dos questionários preenchidos por agentes de saúde durante visitas domiciliares aos pacientes. Os dados fornecem informações cadastrais cruciais para entender o perfil de cada família e são atualizados constantemente ao longo do acompanhamento dos pacientes pela CF/CMS.
+O desafio inicial consistia em analisar, estruturar e transformar dados fornecidos em um arquivo que contém diversas entradas dos questionários preenchidos por agentes públicos de saúde durante visitas domiciliares aos pacientes. Os dados fornecem informações cadastrais cruciais para entender o perfil de cada família e são atualizados constantemente ao longo do acompanhamento dos pacientes pela CF/CMS.
 
 ## Objetivos 🎯
 
@@ -13,26 +13,25 @@ O desafio inicial consistia em analisar, estruturar e transformar dados fornecid
 
 ## Estrutura do Projeto 📦
 
-### 1. **`cleaning.py`**
-Esse arquivo contém a resolução completa do processo de limpeza e transformação dos dados. Nele, realizei as seguintes etapas:
-- Identificação e tratamento de erros nos dados
-- Conversão de valores de variáveis para formatos adequados
-- Criação de novas variáveis, quando necessário
-- Estruturação final dos dados para análise
-
-### 2. **`exploring_data.ipynb`**
+### 1. **`exploring_data.ipynb`**
 Esse arquivo é um Jupyter notebook onde realizei a análise exploratória dos dados. Nele, busquei:
 - Identificar padrões, tendências e inconsistências nos dados
 - Investigar as possíveis causas de erros
 - Sugerir soluções para os problemas encontrados
 
+### 2. **`cleaning.py`**
+Esse arquivo contém a resolução completa do processo de limpeza e transformação dos dados. Nele, realizei as seguintes etapas:
+- Identificação e tratamento de erros nos dados
+- Conversão de valores de variáveis para formatos adequados
+- Criação de novas colunas, quando necessário
+- Estruturação final dos dados para análise
+
 ## Como Usar 💻
 
 1. Faça o download ou clone o repositório:
    ```bash
-   git clone https://github.com/micahgcnavia/DIT-Test.git
+   git clone https://github.com/micahgcnavia/DIT_Data_Science_Test.git
    ```
+2. Use o arquivo `cleaning.py` para obter a tabela limpa e pronta para análise
+3. Confira o relatório final no arquivo `xxx.pbix` (em construção 🛠️)
 
-2. Baixe o arquivo `dados_ficha_a_desafio.csv` através do [link do Google Drive](https://drive.google.com/file/d/1dWC1ZUPNlCQBalYPY8uP4Zzs0aue9nkQ/view?usp=sharing)
-
-3. Mude ```file_path``` nos arquivos .py e .ipynb para o caminho correspondente ao arquivo na sua máquina
