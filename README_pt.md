@@ -2,7 +2,7 @@
 
 Este repositório foi inicialmente criado para um **desafio para a vaga de Cientista de Dados** da **Diretoria de Inovação e Tecnologia da Prefeitura do Rio**, na área da saúde. No entanto, aproveitei a oportunidade para ir além e implementar análises estatísticas após a limpeza e tratamento dos dados.
 
-O desafio inicial consistia em analisar, estruturar e transformar dados fornecidos em um arquivo que contém diversas entradas dos questionários preenchidos por agentes de saúde durante visitas domiciliares aos pacientes. Os dados fornecem informações cadastrais cruciais para entender o perfil de cada família e são atualizados constantemente ao longo do acompanhamento dos pacientes pela CF/CMS. Para uma introdução aos dados, consultar o arquivo ```descricao_de_campos.xlsx```.
+O desafio inicial consistia em analisar, estruturar e transformar dados fornecidos em um arquivo que contém diversas entradas dos questionários preenchidos por agentes de saúde durante visitas domiciliares aos pacientes. Os dados fornecem informações cadastrais cruciais para entender o perfil de cada família e são atualizados constantemente ao longo do acompanhamento dos pacientes pela CF/CMS.
 
 ## Objetivos 🎯
 

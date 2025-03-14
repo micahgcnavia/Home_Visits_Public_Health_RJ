@@ -2,7 +2,7 @@
 
 This repository was initially created for a **Data Scientist position challenge** for the **Innovation and Technology Directorate of the Rio de Janeiro City Hall**, in the health department. However, I took the opportunity to go beyond and implement statistical analyses after cleaning and processing the data. See ```README_pt.md``` for a portuguese version of this README file.
 
-The initial challenge involved analyzing, structuring, and transforming data provided in a file containing multiple entries from questionnaires filled out by health agents during home visits to patients. The data provides crucial registration information to understand the profile of each family and is constantly updated throughout the patient follow-up by CF/CMS. For an introduction to the data, refer to the file ```descricao_de_campos.xlsx```.
+The initial challenge involved analyzing, structuring, and transforming data provided in a file containing multiple entries from questionnaires filled out by health agents during home visits to patients. The data provides crucial registration information to understand the profile of each family and is constantly updated throughout the patient follow-up by CF/CMS.
 
 ## Goals 🎯
 
