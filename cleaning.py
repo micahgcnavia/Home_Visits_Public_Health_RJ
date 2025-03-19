@@ -638,10 +638,10 @@ def main():
 
         if null_values == 'y':
 
-            data.to_csv('final_dataset.csv', index=False)
+            data.to_csv('final_dataset.csv', index=False, sep =';')
 
         else:
-            data_no_null_values.to_csv('final_dataset_dropna.csv', index=False)
+            data_no_null_values.to_csv('final_dataset_dropna.csv', index=False, sep =';')
     else:
         pass
 
