@@ -4,6 +4,7 @@ import re
 import ast
 import uuid
 from fractions import Fraction
+from datetime import datetime
 
 #=============================================================================================================================================
 
@@ -46,7 +47,7 @@ def boolean_to_int(df, col):
 # - data_atualizacao_cadastro
 # - updated_at
 
-def standardize_date(df, col):
+def standardize_date(df, col): # add flag for invalid entries
     """
     Standardizes a date column in the DataFrame, converting it to Pandas datetime format.
 
@@ -66,6 +67,28 @@ def standardize_date(df, col):
     except:
         df[col] = df[col].apply(lambda x: x if '.' in x else x + '.000')
         df[col] = pd.to_datetime(df[col])
+    return df
+
+def date_flag(df, col):
+    """
+    Creates a flag column to indicate whether the date entry is incorrect
+
+    Parameters:
+    -----------
+    df : pandas.DataFrame
+    col : str
+        Name of the date column (already in datetime)
+    new_col : str
+        Name of the date flag column
+
+    Returns:
+    --------
+    df: pandas.DataFrame
+    """
+    current_year = datetime.now().year
+    min_year = current_year - 120 # oldest person, maybe?
+
+    df[col+'_flag'] = df[col].dt.year.apply(lambda x: 1 if x < min_year or x > current_year else 0) # 1 for incorrect entries
     return df
 
 #-------------------------------------------------------------------------------------------------------------------------------------
@@ -256,112 +279,6 @@ def replace_strings(df, col, Input, output):
     df[col] = df[col].replace(Input, output)
     return df
 
-# def limpar_identidade_genero(df, col='identidade_genero'):
-#     """
-#     Limpa a coluna de identidade de gênero, substituindo valores inconsistentes.
-
-#     Parâmetros:
-#         df (pd.DataFrame): O DataFrame a ser processado.
-#         col (str): O nome da coluna de identidade de gênero.
-
-#     Retorna:
-#         pd.DataFrame: O DataFrame com a coluna limpa.
-#     """
-#     df[col] = df[col].replace('Homossexual (gay / lésbica)', 'Homossexual')
-#     df[col] = df[col].replace([np.nan, 'Não', 'Sim'], 'Não informado')
-#     return df
-
-# def limpar_orientacao_sexual(df, col='orientacao_sexual'):
-#     """
-#     Limpa a coluna de orientação sexual, substituindo valores inconsistentes.
-
-#     Parâmetros:
-#         df (pd.DataFrame): O DataFrame a ser processado.
-#         col (str): O nome da coluna de orientação sexual.
-
-#     Retorna:
-#         pd.DataFrame: O DataFrame com a coluna limpa.
-#     """
-#     df[col] = df[col].replace('Homossexual (gay / lésbica)', 'Homossexual')
-#     return df
-
-# def limpar_raca_cor(df, col='raca_cor'):
-#     """
-#     Limpa a coluna de raça/cor, substituindo valores inconsistentes.
-
-#     Parâmetros:
-#         df (pd.DataFrame): O DataFrame a ser processado.
-#         col (str): O nome da coluna de raça/cor.
-
-#     Retorna:
-#         pd.DataFrame: O DataFrame com a coluna limpa.
-#     """
-#     df[col] = df[col].replace('Não', 'Não deseja informar')
-#     return df
-
-# def limpar_religiao(df, col='religiao'):
-#     """
-#     Limpa a coluna de religião, substituindo valores inconsistentes.
-
-#     Parâmetros:
-#         df (pd.DataFrame): O DataFrame a ser processado.
-#         col (str): O nome da coluna de religião.
-
-#     Retorna:
-#         pd.DataFrame: O DataFrame com a coluna limpa.
-#     """
-#     random_entries = ['Acomp. Cresc. e Desenv. da Criança', 'ORQUIDEA', 'ESB ALMIRANTE', '10 EAP 01']
-#     df[col] = df[col].replace(random_entries, 'Sem informação')
-#     df[col] = df[col].replace('Não', 'Sem religião')
-#     df[col] = df[col].replace('Sim', 'Outra')
-#     return df
-
-# def limpar_escolaridade(df, col='escolaridade'):
-#     """
-#     Limpa a coluna de escolaridade, substituindo valores inconsistentes.
-
-#     Parâmetros:
-#         df (pd.DataFrame): O DataFrame a ser processado.
-#         col (str): O nome da coluna de escolaridade.
-
-#     Retorna:
-#         pd.DataFrame: O DataFrame com a coluna limpa.
-#     """
-#     df[col] = df[col].replace('Não sabe ler/escrever', 'Iletrado')
-#     df[col] = df[col].replace('Especialização/Residência', 'Especialização ou Residência')
-#     return df
-
-# def limpar_situacao_profissional(df, col='situacao_profissional'):
-#     """
-#     Limpa a coluna de situação profissional, substituindo valores inconsistentes.
-
-#     Parâmetros:
-#         df (pd.DataFrame): O DataFrame a ser processado.
-#         col (str): O nome da coluna de situação profissional.
-
-#     Retorna:
-#         pd.DataFrame: O DataFrame com a coluna limpa.
-#     """
-#     df[col] = df[col].replace('SMS CAPS DIRCINHA E LINDA BATISTA AP 33', 'Não informado')
-#     df[col] = df[col].replace('Pensionista / Aposentado', 'Pensionista ou Aposentado')
-#     df[col] = df[col].replace(['Não se aplica', 'Não trabalha'], 'Desempregado')
-#     df[col] = df[col].replace('Médico Urologista', 'Emprego Formal')
-#     return df
-
-# def limpar_renda_familiar(df, col='renda_familiar'):
-#     """
-#     Limpa a coluna de renda familiar, substituindo valores inconsistentes.
-
-#     Parâmetros:
-#         df (pd.DataFrame): O DataFrame a ser processado.
-#         col (str): O nome da coluna de renda familiar.
-
-#     Retorna:
-#         pd.DataFrame: O DataFrame com a coluna limpa.
-#     """
-#     df[col] = df[col].replace(['Manhã', 'Internet'], 'Não informado')
-#     return df
-
 #-------------------------------------------------------------------------------------------------------------------------------------
 
 def extract_category(text):
@@ -439,7 +356,7 @@ def create_social_security_col(df, col='previdencia_social'):
         'Autônomo': 0,
         'Emprego Informal': 0,
         'Autônomo sem previdência social': 0,
-        'Empregador': 0,
+        'Empregador': 1,
         'Não informado': 0}
     
     df[col] = df['situacao_profissional'].map(rules)
@@ -461,7 +378,7 @@ def family_income_to_float(value):
     Converted value as float, '+4' or None
     """
     if 'Mais de 4' in value: # More than 4
-        return '+4'
+        pass
     
     match = re.search(r'(\d+\/\d+|\d+)', value)
     if match:
@@ -488,6 +405,26 @@ def transform_family_income(df, col='renda_familiar'):
     """
     df[col] = df[col].apply(family_income_to_float)
     return df
+
+def family_income_flag(df, col='renda_familiar', flag_col='renda_familiar_flag'):
+    """
+    Add a flag column to indicate whether the family income is greater than 4 minimum wages
+
+    Parameters:
+    -----------
+    df : pandas.DataFrame
+    col : str
+        Name of the family income column
+    flag_col : str
+        Name of the family income flag column
+
+    Returns:
+    --------
+    df : pandas.DataFrame
+    """
+    df[flag_col] = df['renda_familiar'].apply(lambda x: 1 if x == 'Mais de 4' else 0)
+    return df
+
 
 #-------------------------------------------------------------------------------------------------------------------------------------
 
@@ -527,47 +464,81 @@ def calculate_IQR_lims(df, col, factor=1.5):
     upper_lim = Q3 + factor * IQR
     return [lower_lim, upper_lim]
 
-def identificar_outliers(df, col, limite_inferior, limite_superior):
+def identify_outliers(df, col, lower_limit, upper_limit):
     """
-    Identifica outliers em uma coluna numérica com base em limites inferior e superior.
+    Identifies outliers in a numeric column based on lower and upper limits.
 
-    Parâmetros:
-        df (pd.DataFrame): O DataFrame a ser processado.
-        col (str): O nome da coluna numérica.
-        limite_inferior (float): O limite inferior do intervalo válido.
-        limite_superior (float): O limite superior do intervalo válido.
+    Parameters:
+    -----------
+    df : pandas.DataFrame
+    col : str
+        The name of the numeric column
+    lower_limit : float
+    upper_limit : float
 
-    Retorna:
-        pd.DataFrame: O DataFrame com uma nova coluna indicando se o valor é um outlier (0 ou 1).
+    Returns:
+    --------
+    df : pandas.DataFrame 
+        The DataFrame with a new flag column indicating whether the value is an outlier (0 or 1).
     """
-    df[col + '_outlier_flag'] = ~df[col].between(limite_inferior, limite_superior)
+    df[col + '_outlier_flag'] = ~df[col].between(lower_limit, upper_limit)
     df[col + '_outlier_flag'] = df[col + '_outlier_flag'].astype(int)
     return df
+
+#-------------------------------------------------------------------------------------------------------------------------------------
+
+# Check null values
+
+def check_null_values(df):
+    """
+    Check if there are any null values in the dataframe after applying cleaning functions.
+    
+    Parameters:
+    -----------
+    df : pandas.DataFrame
+    """
+
+    N_null = len(df[df.isnull().any(axis=1)])
+
+    if N_null != 0:
+        print('There are still {N_null} null values in the dataframe.'.format(N_null))
+
+    else:
+        print('No null values in the dataframe.')
+
 
 #========================================================================================================================================
 
 def main():
     """
-    Função principal que executa a limpeza e transformação dos dados.
+    Main function that performs data cleaning and transformation.
     """
-    file_path = '/home/micah/dados_ficha_a_desafio.csv' # alterar para o caminho adequado da sua máquina.
-    data = pd.read_csv(file_path)
+    url = "https://drive.google.com/file/d/1dWC1ZUPNlCQBalYPY8uP4Zzs0aue9nkQ/view?usp=sharing"
+    path = 'https://drive.google.com/uc?export=download&id='+url.split('/')[-2]
 
-    # Limpando colunas qualitativas:
+    try:
+        data = pd.read_csv(path)
+        print('Table loaded with success.')
+
+    except:
+        print('Error when loading the table. Please contact the author.')
+
+    print('Cleaning quantitative columns...')
+
     lims_altura = calculate_IQR_lims(data, 'altura')
-    lims_altura[0] = 40 # assumindo crianças recém nascidas
+    lims_altura[0] = 40 # considering newborn babies
     lims_peso = calculate_IQR_lims(data, 'peso')
     lims_pressao_diastolica = calculate_IQR_lims(data, 'pressao_diastolica')
     lims_pressao_sistolica = calculate_IQR_lims(data, 'pressao_sistolica')
 
-    data = identificar_outliers(data, 'altura', lims_altura[0], lims_altura[1])
-    data = identificar_outliers(data, 'peso', lims_peso[0], lims_peso[1])
-    data = identificar_outliers(data, 'pressao_diastolica', lims_pressao_diastolica[0], lims_pressao_diastolica[1])
-    data = identificar_outliers(data, 'pressao_sistolica', lims_pressao_sistolica[0], lims_pressao_sistolica[1])
+    data = identify_outliers(data, 'altura', lims_altura[0], lims_altura[1])
+    data = identify_outliers(data, 'peso', lims_peso[0], lims_peso[1])
+    data = identify_outliers(data, 'pressao_diastolica', lims_pressao_diastolica[0], lims_pressao_diastolica[1])
+    data = identify_outliers(data, 'pressao_sistolica', lims_pressao_sistolica[0], lims_pressao_sistolica[1])
 
-    # Limpando colunas com erros de True e False:
+    print('Cleaning columns with True / False errors...')
 
-    colunas_boolean_to_int = [
+    boolean_to_int_cols = [
     'obito',
     'luz_eletrica',
     'em_situacao_de_rua',
@@ -577,58 +548,90 @@ def main():
     'crianca_matriculada_creche_pre_escola'
     ]
 
-    # Aplicando a função boolean_to_int para cada coluna
-    for coluna in colunas_boolean_to_int:
-        data = boolean_to_int(data, coluna)
+    # Applying boolean_to_int function to each column
+    for column in boolean_to_int_cols:
+        data = boolean_to_int(data, column)
 
-    # Limpando colunas com erros de strings:
+    print('Cleaning columns with string errors...')
 
-    colunas_erros_string = ['meios_transporte', 'doencas_condicoes', 'meios_comunicacao', 'em_caso_doenca_procura']
+    standardize_string_cols = ['meios_transporte', 'doencas_condicoes', 'meios_comunicacao', 'em_caso_doenca_procura']
 
-    # Aplicando a função clean_column para cada coluna
-    for coluna in colunas_erros_string:
-        data = clean_column(data, coluna)
+    # Applying the clean_column function to each column
+    for column in standardize_string_cols:
+        data = clean_column(data, column)
 
-    # Limpando colunas de data:
+    print('Cleaning date columns...')
 
-    colunas_data = ['data_cadastro', 'data_nascimento', 'data_atualizacao_cadastro', 'updated_at']
+    date_columns = ['data_cadastro', 'data_nascimento', 'data_atualizacao_cadastro', 'updated_at']
 
-    # Aplicando a função standardize_date para cada coluna
-    for coluna in colunas_data:
-        data = standardize_date(data, coluna)
+    # Applying the standardize_date function to each column and adding flags for incorrect entries
+    for column in date_columns:
+        data = standardize_date(data, column)
+        data = date_flag(data, column)
 
-    # Limpando colunas específicas:
+    print('Cleaning columns with specific errors...')
+
     check_id_format(data, 'id_paciente')
-    duas, mais_que_duas = check_id_duplicates(data, 'id_paciente')
-    print('Corrigindo duplicatas...')
-    fix_duplicates(data, duas)
-    fix_duplicates(data, mais_que_duas)
-    check_id_duplicates(data, 'id_paciente')
+    duplicates, over_2_repeated_values = check_id_duplicates(data, 'id_paciente')
+    print('Fixing duplicates in id_paciente column...')
+    fix_duplicates(data, duplicates)
+    fix_duplicates(data, over_2_repeated_values)
 
-    # Lista de funções a serem aplicadas
-    funcoes = [
-        limpar_raca_cor,
-        limpar_identidade_genero,
-        limpar_orientacao_sexual,
-        limpar_escolaridade,
-        limpar_religiao,
-        (create_category_col, 'ocupacao', 'categoria_ocupacao'),
-        limpar_renda_familiar,
-        transform_family_income,
-        limpar_situacao_profissional,
-        create_social_security_col
-    ]
+    # Columns with incorrect and random entries:
 
-    # Iterando sobre as funções e aplicando no dataframe
-    for func in funcoes:
+    random_entries = ['Acomp. Cresc. e Desenv. da Criança', 'ORQUIDEA', 'ESB ALMIRANTE', '10 EAP 01']
+
+    replace_string_columns = {'identidade_genero': [(['Homossexual (gay / lésbica)', 'Heterossexual', 'Bissexual', np.nan, 'Não', 'Sim'], 'Não informado')],
+                              'raca_cor': [('Não', 'Não deseja informar')],
+                              'orientacao_sexual': [('Homossexual (gay / lésbica)', 'Homossexual')],
+                              'religiao': [(random_entries, 'Sem informação'),
+                                           ('Não', 'Sem religião'), ('Sim', 'Outra')],
+                              'escolaridade': [('Não sabe ler/escrever', 'Iletrado'), 
+                                               ('Especialização/Residência', 'Especialização ou Residência')],
+                              'situacao_profissional': [('SMS CAPS DIRCINHA E LINDA BATISTA AP 33', 'Não informado'),
+                                                        ('Pensionista / Aposentado', 'Pensionista ou Aposentado'),
+                                                        (['Não se aplica', 'Não trabalha'], 'Desempregado'),
+                                                        ('Médico Urologista', 'Emprego Formal')],
+                              'renda_familiar': [(['Manhã', 'Internet'], 'Não informado')]}
+
+    for col in list(replace_string_columns.keys()):
+
+        for item in replace_string_columns[col]:
+
+            data = replace_strings(data, col, item[0], item[1])
+
+    # List of functions to be applied
+    functions = [(create_category_col, 'ocupacao', 'categoria_ocupacao'), 
+                transform_family_income,
+                family_income_flag,
+                create_social_security_col]
+
+    # Iterating over the functions and applying them to the dataframe
+    for func in functions:
         if isinstance(func, tuple):
-            # Função que precisa de parâmetros adicionais
+            # Function that needs additional parameters
             data = func[0](data, *func[1:])
         else:
-            # Função sem parâmetros adicionais
+            # Function with no additional parameters
             data = func(data)
 
-    data.to_csv('tabela_limpa.csv', index=False)
+    # Checking for null values
+    check_null_values(data)
+
+    # Check for duplicates in id_paciente column
+    check_id_duplicates(data, 'id_paciente')
+
+    print('-'*40, 'Finish cleaning table!', '-'*40)
+
+    # Preview
+    data.head(10)
+
+    retrieve_data = input("Do you wish to retrieve the cleaned dataset? (y/n) -- Warning: big file!")
+
+    if retrieve_data == 'y':
+        data.to_csv('final_dataset.csv', index=False)
+    else:
+        pass
 
 if __name__ == "__main__":
     main()
