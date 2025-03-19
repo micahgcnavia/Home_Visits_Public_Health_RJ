@@ -203,10 +203,10 @@ def check_id_duplicates(df, col):
     more_than_2_entries = [key for key, value in num_duplicates.items() if value > 2]
 
     if len(only_2_entries) != 0:
-        print(f'2 repeated values found in column {col} in {len(only_2_entries)} entry(ies).\n')
+        print(f'2 repeated values found in column {col} in {len(only_2_entries)} entry(ies).')
 
     if len(more_than_2_entries) != 0:
-        print(f"More than 2 repeated values found in column {col} in {len(more_than_2_entries)} entry(ies).\n")
+        print(f"More than 2 repeated values found in column {col} in {len(more_than_2_entries)} entry(ies).")
     else:
         print(f"No duplicates found in column {col}.")
         return False
@@ -254,7 +254,7 @@ def fix_duplicates(df, col, ids):
             df = df.append(most_recent_entry)
         else:
             for i in range(1, len(subset)):
-                new_id = generate_patient_id(df)
+                new_id = generate_patient_id(df, col)
                 df.loc[subset.index[i], col] = new_id
 
 #-------------------------------------------------------------------------------------------------------------------------------------
@@ -295,7 +295,7 @@ def extract_category(text):
     Extracted text or None
     """
     match = re.search(r'\((.*?)\)', text)
-    return match.group(1) if match else None
+    return match.group(1) if match else 'Não se aplica'
 
 def remove_category(text):
     """
@@ -378,7 +378,9 @@ def family_income_to_float(value):
     Converted value as float, '+4' or None
     """
     if 'Mais de 4' in value: # More than 4
-        pass
+        return 5
+    elif 'Não informado' in value: # Not informed
+        return 0
     
     match = re.search(r'(\d+\/\d+|\d+)', value)
     if match:
@@ -408,7 +410,7 @@ def transform_family_income(df, col='renda_familiar'):
 
 def family_income_flag(df, col='renda_familiar', flag_col='renda_familiar_flag'):
     """
-    Add a flag column to indicate whether the family income is greater than 4 minimum wages
+    Add a flag column to indicate whether the family income is greater than 4 minimum wages or if the entry is incorrect
 
     Parameters:
     -----------
@@ -422,7 +424,7 @@ def family_income_flag(df, col='renda_familiar', flag_col='renda_familiar_flag')
     --------
     df : pandas.DataFrame
     """
-    df[flag_col] = df['renda_familiar'].apply(lambda x: 1 if x == 'Mais de 4' else 0)
+    df[flag_col] = df['renda_familiar'].apply(lambda x: 1 if x in [5, 0] else 0)
     return df
 
 
@@ -501,7 +503,7 @@ def check_null_values(df):
     N_null = len(df[df.isnull().any(axis=1)])
 
     if N_null != 0:
-        print('There are still {N_null} null values in the dataframe.'.format(N_null))
+        print(f'There are {N_null} null values in the dataframe.'.format(N_null))
 
     else:
         print('No null values in the dataframe.')
@@ -522,6 +524,9 @@ def main():
 
     except:
         print('Error when loading the table. Please contact the author.')
+
+    # Checking for null values
+    check_null_values(data)
 
     print('Cleaning quantitative columns...')
 
@@ -574,10 +579,13 @@ def main():
     check_id_format(data, 'id_paciente')
     duplicates, over_2_repeated_values = check_id_duplicates(data, 'id_paciente')
     print('Fixing duplicates in id_paciente column...')
-    fix_duplicates(data, duplicates)
-    fix_duplicates(data, over_2_repeated_values)
+    fix_duplicates(data, 'id_paciente', duplicates)
+    fix_duplicates(data, 'id_paciente', over_2_repeated_values)
 
-    # Columns with incorrect and random entries:
+    # Check for duplicates in id_paciente column
+    check_id_duplicates(data, 'id_paciente')
+
+    print('Cleaning columns with incorrect and/or random entries...')
 
     random_entries = ['Acomp. Cresc. e Desenv. da Criança', 'ORQUIDEA', 'ESB ALMIRANTE', '10 EAP 01']
 
@@ -615,21 +623,25 @@ def main():
             # Function with no additional parameters
             data = func(data)
 
-    # Checking for null values
+    # Checking for null values again
     check_null_values(data)
 
-    # Check for duplicates in id_paciente column
-    check_id_duplicates(data, 'id_paciente')
+    data_no_null_values = data.dropna()
 
     print('-'*40, 'Finish cleaning table!', '-'*40)
 
-    # Preview
-    data.head(10)
-
-    retrieve_data = input("Do you wish to retrieve the cleaned dataset? (y/n) -- Warning: big file!")
+    retrieve_data = input("Do you wish to retrieve the cleaned dataset? (y/n)")
 
     if retrieve_data == 'y':
-        data.to_csv('final_dataset.csv', index=False)
+
+        null_values = input("Do you want to include rows with null values? (y/n)") 
+
+        if null_values == 'y':
+
+            data.to_csv('final_dataset.csv', index=False)
+
+        else:
+            data_no_null_values.to_csv('final_dataset_dropna.csv', index=False)
     else:
         pass
 
