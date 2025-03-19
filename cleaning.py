@@ -7,9 +7,9 @@ from fractions import Fraction
 
 #=============================================================================================================================================
 
-# Corrigindo colunas com erros parecidos:
+# Fixing columns with alike errors:
 
-# Colunas:
+# Columns:
 
 # - obito
 # - luz_eletrica
@@ -19,39 +19,47 @@ from fractions import Fraction
 # - familia_beneficiaria_auxilio_brasil
 # - crianca_matriculada_creche_pre_escola
 
-def boolean_para_int(df, col):
+def boolean_to_int(df, col):
     """
-    Converte valores booleanos (True/False) em inteiros (1/0) em uma coluna específica do DataFrame.
+    Converts boolean values ​​(True/False) to integers (1/0) in a specific column of the DataFrame.
 
-    Parâmetros:
-        df (pd.DataFrame): O DataFrame a ser processado.
-        col (str): O nome da coluna a ser convertida.
+    Parameters:
+    -----------
+    df : pandas.DataFrame
+    col : str
+        Name of the column to apply the conversion
 
-    Retorna:
-        pd.DataFrame: O DataFrame com a coluna convertida.
+    Returns:
+    --------
+    df: pandas.DataFrame
+        Dataframe converted
     """
     df[col] = df[col].replace({'False': 0, 'True': 1}).astype(int)
     return df
 
 #-------------------------------------------------------------------------------------------------------------------------------------
 
-# Colunas:
+# Columns:
 
 # - data_cadastro
 # - data_nascimento
 # - data_atualizacao_cadastro
 # - updated_at
 
-def padronizar_data(df, col):
+def standardize_date(df, col):
     """
-    Padroniza uma coluna de datas no DataFrame, convertendo para o formato datetime.
+    Standardizes a date column in the DataFrame, converting it to Pandas datetime format.
 
-    Parâmetros:
-        df (pd.DataFrame): O DataFrame a ser processado.
-        col (str): O nome da coluna de datas.
+    Parameters:
+    -----------
+    df : pandas.DataFrame
+    col : str
+        Name of the column to apply the conversion
 
-    Retorna:
-        pd.DataFrame: O DataFrame com a coluna de datas padronizada.
+    Returns:
+    --------
+    df: pandas.DataFrame
+        Dataframe column converted to datetime
     """
     try:
         df[col] = pd.to_datetime(df[col])
@@ -62,22 +70,26 @@ def padronizar_data(df, col):
 
 #-------------------------------------------------------------------------------------------------------------------------------------
 
-# Colunas:
+# Columns:
 
 # - meios_transporte
 # - doencas_condicoes
 # - meios_comunicacao
 # - em_caso_doenca_procura
 
-def limpar_valores(value):
+def clean_values(value):
     """
-    Limpa um valor individual ou uma lista de strings, convertendo listas em strings separadas por vírgulas.
+    Cleans an individual value or a list of strings, converting lists to comma-separated strings.
 
-    Parâmetros:
-        value (str ou list): O valor a ser processado.
+    Parameters:
+    -----------
+    value : str
+        Element to be cleaned
 
-    Retorna:
-        str: O valor limpo.
+    Returns:
+    --------
+    value: str
+        Cleaned string or 'Não informado' (Not informed) when getting null values
     """
     try:
         if isinstance(value, str) and value.startswith("[") and value.endswith("]"):
@@ -93,56 +105,71 @@ def limpar_valores(value):
     except Exception:
         return "Não informado"
 
-def limpar_coluna(df, col):
+def clean_column(df, col):
     """
-    Limpa uma coluna específica de um DataFrame usando a função limpar_valores.
+    Cleans a specific column from a DataFrame using the clean_values ​​function.
 
-    Parâmetros:
-        df (pd.DataFrame): O DataFrame a ser processado.
-        col (str): O nome da coluna a ser limpa.
+    Parameters:
+    -----------
+    df : pandas.DataFrame
+    col : str
+        Name of the column to clean
 
-    Retorna:
-        pd.DataFrame: O DataFrame com a coluna especificada limpa.
+    Returns:
+    --------
+    df: pandas.DataFrame
+        Dataframe with cleaned columns
     """
-    df[col] = df[col].apply(limpar_valores)
+    df[col] = df[col].apply(clean_values)
     return df
 
 #-------------------------------------------------------------------------------------------------------------------------------------
 
-# Colunas com erros específicos:
+# Columns with specific errors:
 
 # id_paciente
 
-def checar_formato_id(df, col):
+def check_id_format(df, col):
     """
-    Verifica se os valores na coluna de ID do paciente estão no formato UUID.
+    Checks if the values ​​in the patient ID column are in UUID format.
 
-    Parâmetros:
-        df (pd.DataFrame): O DataFrame a ser processado.
-        col (str): O nome da coluna de ID.
+    Parameters:
+    -----------
+    df : pandas.DataFrame
+    col : str
+        Name of the patient ID column
 
-    Retorna:
-        bool: True se todos os IDs estiverem no formato correto, False caso contrário.
+    Returns:
+    --------
+    True if all IDs are in the correct format, False otherwise.
     """
+
     id_pattern = re.compile(r'^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$', re.IGNORECASE)
     invalid_ids = df[~df['id_paciente'].astype(str).str.match(id_pattern, na=False)]
     if not invalid_ids.empty:
-        print(f"Foram encontrados {len(invalid_ids)} valores inválidos na coluna {col}:")
+        print(f"{len(invalid_ids)} invalid values were found in column {col}:")
         print(invalid_ids[[col]].head())
+        return False
     else:
-        print('Nenhum problema de formato encontrado na coluna id_paciente.')
+        print('No format issues found in patient ID column.')
         return True
 
-def checar_duplicatas(df, col):
+def check_id_duplicates(df, col):
     """
-    Verifica se há valores duplicados em uma coluna específica do DataFrame.
+    Checks for duplicate values ​​in the patient ID column.
 
-    Parâmetros:
-        df (pd.DataFrame): O DataFrame a ser processado.
-        col (str): O nome da coluna a ser verificada.
+    Parameters:
+    -----------
+    df : pandas.DataFrame
+    col : str
+        Name of the patient ID column
 
-    Retorna:
-        tuple: Uma tupla contendo listas de IDs duplicados e IDs com mais de duas ocorrências.
+    Returns:
+    --------
+    only_2_entries: list
+        List with duplicates
+    more_than_2_entries: list
+        List with values repeated more than 2 times
     """
     repeated_entries = df.loc[df.duplicated(col, keep=False)]
     repeated_entries = list(repeated_entries[col])
@@ -153,217 +180,257 @@ def checar_duplicatas(df, col):
     more_than_2_entries = [key for key, value in num_duplicates.items() if value > 2]
 
     if len(only_2_entries) != 0:
-        print(f'Encontrados 2 valores repetidos para um mesmo id na coluna {col} em {len(only_2_entries)} entrada(s).\n')
+        print(f'2 repeated values found in column {col} in {len(only_2_entries)} entry(ies).\n')
 
     if len(more_than_2_entries) != 0:
-        print(f"Mais de 2 valores repetidos encontrados para um mesmo id na coluna {col} em {len(more_than_2_entries)} entrada(s).\n")
+        print(f"More than 2 repeated values found in column {col} in {len(more_than_2_entries)} entry(ies).\n")
     else:
-        print(f"Nenhuma duplicata encontrada para a coluna {col}")
+        print(f"No duplicates found in column {col}.")
         return False
 
     return only_2_entries, more_than_2_entries
 
-def gerar_id_unico(df):
+def generate_patient_id(df, col):
     """
-    Gera um ID único que não existe na coluna 'id_paciente' do DataFrame.
+    Generates a unique ID that does not exist in the patient ID column of the DataFrame.
 
-    Parâmetros:
-        df (pd.DataFrame): O DataFrame a ser processado.
+    Parameters:
+    -----------
+    df : pandas.DataFrame
+    col : str
+        Name of the patient ID column
 
-    Retorna:
-        str: Um ID único no formato UUID.
+    Returns:
+    --------
+    new_id: str
+        A unique ID in UUID format
     """
     while True:
-        novo_id = str(uuid.uuid4())
-        if novo_id not in df['id_paciente'].values:
-            return novo_id
+        new_id = str(uuid.uuid4())
+        if new_id not in df[col].values:
+            return new_id
 
-def corrigir_duplicatas(df, ids):
+def fix_duplicates(df, col, ids):
     """
-    Corrige entradas duplicadas no DataFrame, mantendo o registro mais atual ou gerando novos IDs.
+    Fixes duplicate entries in the DataFrame by keeping the most current record or generating new IDs.
 
-    Parâmetros:
-        df (pd.DataFrame): O DataFrame a ser processado.
-        ids (list): Lista de IDs duplicados.
+    Parameters:
+    -----------
+    df : pandas.DataFrame
+    col : str
+        Name of the patient ID column
+    ids : list
+        List of duplicate IDs
     """
     for id_paciente in ids:
-        subset = df[df['id_paciente'] == id_paciente]
+        subset = df[df[col] == id_paciente]
         
         if subset['data_nascimento'].nunique() == 1:
-            registro_mais_atual = subset.loc[subset['data_atualizacao_cadastro'].idxmax()]
+            most_recent_entry = subset.loc[subset['data_atualizacao_cadastro'].idxmax()]
             df.drop(subset.index, inplace=True)
-            df = df.append(registro_mais_atual)
+            df = df.append(most_recent_entry)
         else:
             for i in range(1, len(subset)):
-                novo_id = gerar_id_unico(df)
-                df.loc[subset.index[i], 'id_paciente'] = novo_id
+                new_id = generate_patient_id(df)
+                df.loc[subset.index[i], col] = new_id
 
 #-------------------------------------------------------------------------------------------------------------------------------------
 
-# Colunas cujo problema é resolvido com substituição de string 
+# Columns whose problem is solved with string replacement
 
-def limpar_identidade_genero(df, col='identidade_genero'):
+def replace_strings(df, col, Input, output):
     """
-    Limpa a coluna de identidade de gênero, substituindo valores inconsistentes.
+    Replace inconsistent entries in the DataFrame with correct values.
 
-    Parâmetros:
-        df (pd.DataFrame): O DataFrame a ser processado.
-        col (str): O nome da coluna de identidade de gênero.
-
-    Retorna:
-        pd.DataFrame: O DataFrame com a coluna limpa.
+    Parameters:
+    -----------
+    df : pandas.DataFrame
+    col : str
+        Name of the column
+    Input : list
+        List of unwanted values
+    output : list
+        List of values to replace
     """
-    df[col] = df[col].replace('Homossexual (gay / lésbica)', 'Homossexual')
-    df[col] = df[col].replace([np.nan, 'Não', 'Sim'], 'Não informado')
+
+    df[col] = df[col].replace(Input, output)
     return df
 
-def limpar_orientacao_sexual(df, col='orientacao_sexual'):
-    """
-    Limpa a coluna de orientação sexual, substituindo valores inconsistentes.
+# def limpar_identidade_genero(df, col='identidade_genero'):
+#     """
+#     Limpa a coluna de identidade de gênero, substituindo valores inconsistentes.
 
-    Parâmetros:
-        df (pd.DataFrame): O DataFrame a ser processado.
-        col (str): O nome da coluna de orientação sexual.
+#     Parâmetros:
+#         df (pd.DataFrame): O DataFrame a ser processado.
+#         col (str): O nome da coluna de identidade de gênero.
 
-    Retorna:
-        pd.DataFrame: O DataFrame com a coluna limpa.
-    """
-    df[col] = df[col].replace('Homossexual (gay / lésbica)', 'Homossexual')
-    return df
+#     Retorna:
+#         pd.DataFrame: O DataFrame com a coluna limpa.
+#     """
+#     df[col] = df[col].replace('Homossexual (gay / lésbica)', 'Homossexual')
+#     df[col] = df[col].replace([np.nan, 'Não', 'Sim'], 'Não informado')
+#     return df
 
-def limpar_raca_cor(df, col='raca_cor'):
-    """
-    Limpa a coluna de raça/cor, substituindo valores inconsistentes.
+# def limpar_orientacao_sexual(df, col='orientacao_sexual'):
+#     """
+#     Limpa a coluna de orientação sexual, substituindo valores inconsistentes.
 
-    Parâmetros:
-        df (pd.DataFrame): O DataFrame a ser processado.
-        col (str): O nome da coluna de raça/cor.
+#     Parâmetros:
+#         df (pd.DataFrame): O DataFrame a ser processado.
+#         col (str): O nome da coluna de orientação sexual.
 
-    Retorna:
-        pd.DataFrame: O DataFrame com a coluna limpa.
-    """
-    df[col] = df[col].replace('Não', 'Não deseja informar')
-    return df
+#     Retorna:
+#         pd.DataFrame: O DataFrame com a coluna limpa.
+#     """
+#     df[col] = df[col].replace('Homossexual (gay / lésbica)', 'Homossexual')
+#     return df
 
-def limpar_religiao(df, col='religiao'):
-    """
-    Limpa a coluna de religião, substituindo valores inconsistentes.
+# def limpar_raca_cor(df, col='raca_cor'):
+#     """
+#     Limpa a coluna de raça/cor, substituindo valores inconsistentes.
 
-    Parâmetros:
-        df (pd.DataFrame): O DataFrame a ser processado.
-        col (str): O nome da coluna de religião.
+#     Parâmetros:
+#         df (pd.DataFrame): O DataFrame a ser processado.
+#         col (str): O nome da coluna de raça/cor.
 
-    Retorna:
-        pd.DataFrame: O DataFrame com a coluna limpa.
-    """
-    random_entries = ['Acomp. Cresc. e Desenv. da Criança', 'ORQUIDEA', 'ESB ALMIRANTE', '10 EAP 01']
-    df[col] = df[col].replace(random_entries, 'Sem informação')
-    df[col] = df[col].replace('Não', 'Sem religião')
-    df[col] = df[col].replace('Sim', 'Outra')
-    return df
+#     Retorna:
+#         pd.DataFrame: O DataFrame com a coluna limpa.
+#     """
+#     df[col] = df[col].replace('Não', 'Não deseja informar')
+#     return df
 
-def limpar_escolaridade(df, col='escolaridade'):
-    """
-    Limpa a coluna de escolaridade, substituindo valores inconsistentes.
+# def limpar_religiao(df, col='religiao'):
+#     """
+#     Limpa a coluna de religião, substituindo valores inconsistentes.
 
-    Parâmetros:
-        df (pd.DataFrame): O DataFrame a ser processado.
-        col (str): O nome da coluna de escolaridade.
+#     Parâmetros:
+#         df (pd.DataFrame): O DataFrame a ser processado.
+#         col (str): O nome da coluna de religião.
 
-    Retorna:
-        pd.DataFrame: O DataFrame com a coluna limpa.
-    """
-    df[col] = df[col].replace('Não sabe ler/escrever', 'Iletrado')
-    df[col] = df[col].replace('Especialização/Residência', 'Especialização ou Residência')
-    return df
+#     Retorna:
+#         pd.DataFrame: O DataFrame com a coluna limpa.
+#     """
+#     random_entries = ['Acomp. Cresc. e Desenv. da Criança', 'ORQUIDEA', 'ESB ALMIRANTE', '10 EAP 01']
+#     df[col] = df[col].replace(random_entries, 'Sem informação')
+#     df[col] = df[col].replace('Não', 'Sem religião')
+#     df[col] = df[col].replace('Sim', 'Outra')
+#     return df
 
-def limpar_situacao_profissional(df, col='situacao_profissional'):
-    """
-    Limpa a coluna de situação profissional, substituindo valores inconsistentes.
+# def limpar_escolaridade(df, col='escolaridade'):
+#     """
+#     Limpa a coluna de escolaridade, substituindo valores inconsistentes.
 
-    Parâmetros:
-        df (pd.DataFrame): O DataFrame a ser processado.
-        col (str): O nome da coluna de situação profissional.
+#     Parâmetros:
+#         df (pd.DataFrame): O DataFrame a ser processado.
+#         col (str): O nome da coluna de escolaridade.
 
-    Retorna:
-        pd.DataFrame: O DataFrame com a coluna limpa.
-    """
-    df[col] = df[col].replace('SMS CAPS DIRCINHA E LINDA BATISTA AP 33', 'Não informado')
-    df[col] = df[col].replace('Pensionista / Aposentado', 'Pensionista ou Aposentado')
-    df[col] = df[col].replace(['Não se aplica', 'Não trabalha'], 'Desempregado')
-    df[col] = df[col].replace('Médico Urologista', 'Emprego Formal')
-    return df
+#     Retorna:
+#         pd.DataFrame: O DataFrame com a coluna limpa.
+#     """
+#     df[col] = df[col].replace('Não sabe ler/escrever', 'Iletrado')
+#     df[col] = df[col].replace('Especialização/Residência', 'Especialização ou Residência')
+#     return df
 
-def limpar_renda_familiar(df, col='renda_familiar'):
-    """
-    Limpa a coluna de renda familiar, substituindo valores inconsistentes.
+# def limpar_situacao_profissional(df, col='situacao_profissional'):
+#     """
+#     Limpa a coluna de situação profissional, substituindo valores inconsistentes.
 
-    Parâmetros:
-        df (pd.DataFrame): O DataFrame a ser processado.
-        col (str): O nome da coluna de renda familiar.
+#     Parâmetros:
+#         df (pd.DataFrame): O DataFrame a ser processado.
+#         col (str): O nome da coluna de situação profissional.
 
-    Retorna:
-        pd.DataFrame: O DataFrame com a coluna limpa.
-    """
-    df[col] = df[col].replace(['Manhã', 'Internet'], 'Não informado')
-    return df
+#     Retorna:
+#         pd.DataFrame: O DataFrame com a coluna limpa.
+#     """
+#     df[col] = df[col].replace('SMS CAPS DIRCINHA E LINDA BATISTA AP 33', 'Não informado')
+#     df[col] = df[col].replace('Pensionista / Aposentado', 'Pensionista ou Aposentado')
+#     df[col] = df[col].replace(['Não se aplica', 'Não trabalha'], 'Desempregado')
+#     df[col] = df[col].replace('Médico Urologista', 'Emprego Formal')
+#     return df
+
+# def limpar_renda_familiar(df, col='renda_familiar'):
+#     """
+#     Limpa a coluna de renda familiar, substituindo valores inconsistentes.
+
+#     Parâmetros:
+#         df (pd.DataFrame): O DataFrame a ser processado.
+#         col (str): O nome da coluna de renda familiar.
+
+#     Retorna:
+#         pd.DataFrame: O DataFrame com a coluna limpa.
+#     """
+#     df[col] = df[col].replace(['Manhã', 'Internet'], 'Não informado')
+#     return df
 
 #-------------------------------------------------------------------------------------------------------------------------------------
 
-def extrair_categoria(text):
+def extract_category(text):
     """
-    Extrai a informação entre parênteses de um texto.
+    Extracts information between parentheses from a text.
 
-    Parâmetros:
-        text (str): O texto a ser processado.
+    Parameters:
+    -----------
+    text : str
+        Text to be evaluated
 
-    Retorna:
-        str: O texto extraído ou None.
+    Returns:
+    --------
+    Extracted text or None
     """
     match = re.search(r'\((.*?)\)', text)
     return match.group(1) if match else None
 
-def remover_categoria(text):
+def remove_category(text):
     """
-    Remove o texto entre parênteses de um texto.
+    Removes text between parentheses from a text.
 
-    Parâmetros:
-        text (str): O texto a ser processado.
+    Parameters:
+    -----------
+    text : str
+        Text to be evaluated
 
-    Retorna:
-        str: O texto sem a parte entre parênteses.
+    Returns:
+    --------
+    Text with no parentheses
     """
     return re.sub(r'\(.*?\)', '', text).strip()
 
-def criar_col_categoria(df, col, new_col):
+def create_category_col(df, col, new_col):
     """
-    Cria uma nova coluna com a categoria extraída da coluna original e limpa a coluna original.
+    Creates a new column with the category extracted and clears the original column.
 
-    Parâmetros:
-        df (pd.DataFrame): O DataFrame a ser processado.
-        col (str): O nome da coluna original.
-        new_col (str): O nome da nova coluna.
+    Parameters:
+    -----------
+    df : pandas.DataFrame
+    col : str
+        Name of the original column
+    new_col : str
+        Name of the new column
 
-    Retorna:
-        pd.DataFrame: O DataFrame com a nova coluna e a coluna original limpa.
+    Returns:
+    --------
+    df : pandas.DataFrame
     """
-    df[new_col] = df[col].apply(extrair_categoria)
-    df[col] = df[col].apply(remover_categoria)
+    df[new_col] = df[col].apply(extract_category)
+    df[col] = df[col].apply(remove_category)
     return df
 
-def criar_col_previdencia_social(df, col='previdencia_social'):
+def create_social_security_col(df, col='previdencia_social'):
     """
-    Cria uma nova coluna indicando se o paciente tem previdência social com base na situação profissional.
+    Creates a new column indicating whether the patient has social security based on employment status.
 
-    Parâmetros:
-        df (pd.DataFrame): O DataFrame a ser processado.
-        col (str): O nome da nova coluna.
+    Parameters:
+    -----------
+    df : pandas.DataFrame
+    col : str
+        Name of the new column
 
-    Retorna:
-        pd.DataFrame: O DataFrame com a nova coluna.
+    Returns:
+    --------
+    df : pandas.DataFrame
     """
 
-    regras = {
+    rules = {
         'Emprego Formal': 1,
         'Autônomo com previdência social': 1,
         'Pensionista ou Aposentado': 1,
@@ -375,22 +442,25 @@ def criar_col_previdencia_social(df, col='previdencia_social'):
         'Empregador': 0,
         'Não informado': 0}
     
-    df[col] = df['situacao_profissional'].map(regras)
+    df[col] = df['situacao_profissional'].map(rules)
     return df
 
 #-------------------------------------------------------------------------------------------------------------------------------------
 
-def value_to_float(value):
+def family_income_to_float(value):
     """
-    Converte um valor de renda familiar em um número float.
+    Converts family income string into float
 
-    Parâmetros:
-        value (str): O valor a ser convertido.
+    Parameters:
+    -----------
+    value : str
+        Value to be converted
 
-    Retorna:
-        float: O valor convertido ou None.
+    Returns:
+    --------
+    Converted value as float, '+4' or None
     """
-    if 'Mais de 4' in value:
+    if 'Mais de 4' in value: # More than 4
         return '+4'
     
     match = re.search(r'(\d+\/\d+|\d+)', value)
@@ -402,38 +472,56 @@ def value_to_float(value):
             return float(num)
     return None
 
-def transform_renda_familiar(df, col='renda_familiar'):
+def transform_family_income(df, col='renda_familiar'):
     """
-    Transforma a coluna de renda familiar em valores numéricos.
+    Transform family income column in numeric type
 
-    Parâmetros:
-        df (pd.DataFrame): O DataFrame a ser processado.
-        col (str): O nome da coluna de renda familiar.
+    Parameters:
+    -----------
+    df : pandas.DataFrame
+    col : str
+        Name of the family income column
 
-    Retorna:
-        pd.DataFrame: O DataFrame com a coluna transformada.
+    Returns:
+    --------
+    df : pandas.DataFrame
     """
-    df[col] = df[col].apply(value_to_float)
+    df[col] = df[col].apply(family_income_to_float)
     return df
 
 #-------------------------------------------------------------------------------------------------------------------------------------
 
-# Colunas quantitativas:
+# Quantitative columns:
 
-def calculate_IQR_lims(data, col, factor=1.5):
+def calculate_IQR_lims(df, col, factor=1.5):
     """
-    Calcula os limites inferior e superior para identificar outliers com base no intervalo interquartil (IQR).
+    Calculate the lower and upper limits for identifying outliers using the Interquartile Range (IQR) method.
 
-    Parâmetros:
-        data (pd.DataFrame): O DataFrame a ser processado.
-        col (str): O nome da coluna numérica.
-        factor (float): O fator multiplicativo para o IQR.
+    Parameters:
+    -----------
+    data : pandas.DataFrame
+        The dataset containing the column for which the IQR limits are to be calculated.
+    col : str
+        The name of the column in the dataset to calculate the IQR limits for.
+    factor : float, optional (default=1.5)
+        The multiplier for the IQR to determine the lower and upper limits. A common choice is 1.5, 
+        but it can be adjusted based on the desired sensitivity for outlier detection.
 
-    Retorna:
-        list: Uma lista contendo o limite inferior e superior.
+    Returns:
+    --------
+    lower_lim : float
+        The lower limit for identifying outliers. Values below this limit are considered outliers.
+    upper_lim : float
+        The upper limit for identifying outliers. Values above this limit are considered outliers.
+
+    Notes:
+    ------
+    The IQR method identifies outliers by calculating the range between the first quartile (Q1) 
+    and the third quartile (Q3). Outliers are typically defined as values that fall below 
+    `Q1 - factor * IQR` or above `Q3 + factor * IQR`.
     """
-    Q1 = data[col].quantile(0.25)
-    Q3 = data[col].quantile(0.75)
+    Q1 = df[col].quantile(0.25)
+    Q3 = df[col].quantile(0.75)
     IQR = Q3 - Q1
     lower_lim = Q1 - factor * IQR
     upper_lim = Q3 + factor * IQR
@@ -479,7 +567,7 @@ def main():
 
     # Limpando colunas com erros de True e False:
 
-    colunas_boolean_para_int = [
+    colunas_boolean_to_int = [
     'obito',
     'luz_eletrica',
     'em_situacao_de_rua',
@@ -489,33 +577,33 @@ def main():
     'crianca_matriculada_creche_pre_escola'
     ]
 
-    # Aplicando a função boolean_para_int para cada coluna
-    for coluna in colunas_boolean_para_int:
-        data = boolean_para_int(data, coluna)
+    # Aplicando a função boolean_to_int para cada coluna
+    for coluna in colunas_boolean_to_int:
+        data = boolean_to_int(data, coluna)
 
     # Limpando colunas com erros de strings:
 
     colunas_erros_string = ['meios_transporte', 'doencas_condicoes', 'meios_comunicacao', 'em_caso_doenca_procura']
 
-    # Aplicando a função limpar_coluna para cada coluna
+    # Aplicando a função clean_column para cada coluna
     for coluna in colunas_erros_string:
-        data = limpar_coluna(data, coluna)
+        data = clean_column(data, coluna)
 
     # Limpando colunas de data:
 
     colunas_data = ['data_cadastro', 'data_nascimento', 'data_atualizacao_cadastro', 'updated_at']
 
-    # Aplicando a função padronizar_data para cada coluna
+    # Aplicando a função standardize_date para cada coluna
     for coluna in colunas_data:
-        data = padronizar_data(data, coluna)
+        data = standardize_date(data, coluna)
 
     # Limpando colunas específicas:
-    checar_formato_id(data, 'id_paciente')
-    duas, mais_que_duas = checar_duplicatas(data, 'id_paciente')
+    check_id_format(data, 'id_paciente')
+    duas, mais_que_duas = check_id_duplicates(data, 'id_paciente')
     print('Corrigindo duplicatas...')
-    corrigir_duplicatas(data, duas)
-    corrigir_duplicatas(data, mais_que_duas)
-    checar_duplicatas(data, 'id_paciente')
+    fix_duplicates(data, duas)
+    fix_duplicates(data, mais_que_duas)
+    check_id_duplicates(data, 'id_paciente')
 
     # Lista de funções a serem aplicadas
     funcoes = [
@@ -524,11 +612,11 @@ def main():
         limpar_orientacao_sexual,
         limpar_escolaridade,
         limpar_religiao,
-        (criar_col_categoria, 'ocupacao', 'categoria_ocupacao'),
+        (create_category_col, 'ocupacao', 'categoria_ocupacao'),
         limpar_renda_familiar,
-        transform_renda_familiar,
+        transform_family_income,
         limpar_situacao_profissional,
-        criar_col_previdencia_social
+        create_social_security_col
     ]
 
     # Iterando sobre as funções e aplicando no dataframe
