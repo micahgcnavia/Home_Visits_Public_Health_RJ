@@ -626,7 +626,11 @@ def main():
     # Checking for null values again
     check_null_values(data)
 
+    data[['renda_familiar', 'altura', 'peso', 'pressao_sistolica', 'pressao_diastolica']] = data[['renda_familiar', 'altura', 'peso', \
+         'pressao_sistolica', 'pressao_diastolica']].apply(pd.to_numeric)
+
     data_no_null_values = data.dropna()
+
 
     print('-'*40, 'Finish cleaning table!', '-'*40)
 
@@ -638,10 +642,10 @@ def main():
 
         if null_values == 'y':
 
-            data.to_csv('final_dataset.csv', index=False, sep =';')
+            data.to_csv('final_dataset.csv', index=False, sep =';', decimal=',') # you can change to '.' if you want
 
         else:
-            data_no_null_values.to_csv('final_dataset_dropna.csv', index=False, sep =';')
+            data_no_null_values.to_csv('final_dataset_dropna.csv', index=False, sep =';', decimal=',')
     else:
         pass
 
