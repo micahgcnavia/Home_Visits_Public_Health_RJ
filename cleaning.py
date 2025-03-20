@@ -631,7 +631,7 @@ def main():
         lambda x: ['Outros' if item not in means_of_communication else item for item in x]
     ) # Cleaning incorrect entries
 
-    data = internet_flag(data)''
+    data = internet_flag(data) # Filtering which patients have access to the Internet
 
     print('Cleaning date columns...')
 
