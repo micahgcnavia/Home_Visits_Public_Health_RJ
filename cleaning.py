@@ -146,6 +146,65 @@ def clean_column(df, col):
     df[col] = df[col].apply(clean_values)
     return df
 
+def handle_lists(value):
+    """
+    Transform the values of a column in a list. Works for single or multiple elements.
+
+    Parameters:
+    -----------
+    value : str
+        Element to be transformed
+
+    Returns:
+    --------
+    value: list
+        Transformed string into a list of string(s)
+    """
+    if ',' in value:
+        
+        return value.replace(' ', '').split(',')
+        
+    else:
+        return [value]
+
+def split_string(df, col):
+    """
+    Transforms a specific column from a DataFrame using the handle_lists ​​function.
+
+    Parameters:
+    -----------
+    df : pandas.DataFrame
+    col : str
+        Name of the column to transform
+
+    Returns:
+    --------
+    df: pandas.DataFrame
+        Dataframe with transformed column
+    """
+    df[col] = df[col].apply(handle_lists)
+    return df  
+
+def internet_flag(df, col='meios_comunicacao', flag_col='internet_flag'):
+    """
+    Add a flag column to indicate whether the patient has access to the Internet
+
+    Parameters:
+    -----------
+    df : pandas.DataFrame
+    col : str
+        Name of the means of communication column
+    flag_col : str
+        Name of the flag column
+
+    Returns:
+    --------
+    df : pandas.DataFrame
+    """
+    df[flag_col] = df[col].apply(lambda x: 'Internet' in x if x else False)
+
+    return df
+
 #-------------------------------------------------------------------------------------------------------------------------------------
 
 # Columns with specific errors:
@@ -561,9 +620,18 @@ def main():
 
     standardize_string_cols = ['meios_transporte', 'doencas_condicoes', 'meios_comunicacao', 'em_caso_doenca_procura']
 
-    # Applying the clean_column function to each column
+    # Applying clean_column and split_string functions to each column
     for column in standardize_string_cols:
         data = clean_column(data, column)
+        data = split_string(data, column)
+
+    means_of_communication = ['Internet', 'Rádio', 'Televisão', 'Jornal', 'Não informado', 'Revista', 'Outros']
+
+    data['meios_comunicacao'] = data['meios_comunicacao'].apply(
+        lambda x: ['Outros' if item not in means_of_communication else item for item in x]
+    ) # Cleaning incorrect entries
+
+    data = internet_flag(data)''
 
     print('Cleaning date columns...')
 
