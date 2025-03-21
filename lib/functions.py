@@ -88,7 +88,7 @@ def date_flag(df, col):
     current_year = datetime.now().year
     min_year = current_year - 120 # oldest person, maybe?
 
-    df[col+'_flag'] = (df[col].dt.year.apply(lambda x: 1 if x < min_year or x > current_year else 0)).astype(int) # 1 for incorrect entries
+    df[col+'_flag'] = df[col].dt.year.apply(lambda x: 1 if x < min_year or x > current_year else 0) # 1 for incorrect entries
     return df
 
 #-------------------------------------------------------------------------------------------------------------------------------------
