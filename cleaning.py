@@ -1,4 +1,4 @@
-from imp import reload 
+from importlib import reload 
 import lib.functions as functions
 reload(functions) 
 from lib.functions import *
