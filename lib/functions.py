@@ -260,6 +260,8 @@ def deseases_flag(df, col='doencas_condicoes'):
 
         df[name+'_flag'] = (df[col].apply(lambda x: 1 if desease in x else 0)).astype(int)
 
+    return df
+
 
 def private_health_care_flag(df, col='em_caso_doenca_procura'):
     """
