@@ -1,0 +1,19 @@
+﻿{
+  "name": "Professional_Dashboard",
+  "dataColors": ["#255B7B", "#F5C68D", "#B7D5D4", "#77878B", "#E8E8E8", "#373E40", "#D9D9D9", "#A8A8D7"],
+  "textClasses": {
+    "title": {
+      "fontFace": "Roboto",
+      "fontWeight": "bold",
+      "fontSize": 16
+    },
+    "label": {
+      "fontFace": "Roboto",
+      "fontSize": 12
+    },
+    "header": {
+      "fontFace": "Roboto",
+      "fontWeight": "600"
+    }
+  }
+}
