@@ -234,31 +234,31 @@ def public_transport_flag(df, col='meios_transporte', flag_col='public_transport
 
     return df
 
-def deseases_flag(df, col='doencas_condicoes'):
+def diseases_flag(df, col='doencas_condicoes'):
     """
-    Add a flag to indicate whether the patient has one or more deseases listed
+    Add a flag to indicate whether the patient has one or more diseases listed
 
     Parameters:
     -----------
     df : pandas.DataFrame
     col : str
-        Name of the deseases column
+        Name of the diseases column
 
     Returns:
     --------
     df : pandas.DataFrame
     """
 
-    deseases = ['Hipertensão', 'Diabetes', 'Tabagismo', 'AIDS', 'Gestante', 'Alcoolismo', 'Usuário de Drogas Ilícitas']
+    diseases = ['Hipertensão', 'Diabetes', 'Tabagismo', 'AIDS', 'Gestante', 'Alcoolismo', 'Usuário de Drogas Ilícitas']
 
-    for desease in deseases:
+    for disease in diseases:
 
-        name = desease.lower()
+        name = disease.lower()
 
         if ' ' in name:
             name = name.replace(' ', '_')
 
-        df[name+'_flag'] = (df[col].apply(lambda x: 1 if desease in x else 0)).astype(int)
+        df[name+'_flag'] = (df[col].apply(lambda x: 1 if disease in x else 0)).astype(int)
 
     return df
 
