@@ -33,5 +33,9 @@ Esse arquivo contém a resolução completa do processo de limpeza e transforma�
    git clone https://github.com/micahgcnavia/Home_Visits_Public_Health_RJ.git
    ```
 2. Use o arquivo `cleaning.py` para obter a tabela limpa e pronta para análise
-3. Confira o relatório final no arquivo `dashboard.pbix`
+3. Confira o relatório final baixando o arquivo `dashboard.pbix` ou visite o [site do relatório](https://app.powerbi.com/reportEmbed?reportId=d145b337-32d0-4f60-bd09-98865e847c13&autoAuth=true&ctid=8a425f8e-ceea-4039-8816-b9cb7af9f4cd) (você talvez precisará ter uma conta no Microsoft Power BI para abrir o relatório).
+
+### Citação 📰
+
+Se você sentir vontade de usar esses dados em seus próprios projetos, considere citar este repositório! Obrigado! :)
 
