@@ -33,4 +33,4 @@ This file contains the complete solution for the data cleaning and transformatio
    git clone https://github.com/micahgcnavia/Home_Visits_Public_Health_RJ.git
    ```
 2. Run `cleaning.py` to get the clean table ready for analysis
-3. Check the final dashboard in the file `xxx.pbix` (under construction 🛠️)
+3. Check the final dashboard in the file `dashboard.pbix`
