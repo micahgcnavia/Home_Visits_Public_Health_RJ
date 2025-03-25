@@ -66,7 +66,7 @@ def main():
 
     data = internet_flag(data) # Filtering which patients have access to the Internet
     data = public_transport_flag(data) # Filtering which patients use public transportation (subway, metro or bus)
-    data = deseases_flag(data) # Filtering which patients have common deseases
+    data = diseases_flag(data) # Filtering which patients have common diseases
     data = private_health_care_flag(data) # Filtering whether the patient has access to private health care facilities
 
     print('Cleaning date columns...')
