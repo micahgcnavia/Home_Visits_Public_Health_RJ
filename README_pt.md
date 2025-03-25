@@ -33,5 +33,5 @@ Esse arquivo contém a resolução completa do processo de limpeza e transforma�
    git clone https://github.com/micahgcnavia/Home_Visits_Public_Health_RJ.git
    ```
 2. Use o arquivo `cleaning.py` para obter a tabela limpa e pronta para análise
-3. Confira o relatório final no arquivo `xxx.pbix` (em construção 🛠️)
+3. Confira o relatório final no arquivo `dashboard.pbix`
 
