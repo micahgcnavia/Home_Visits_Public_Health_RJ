@@ -33,4 +33,8 @@ This file contains the complete solution for the data cleaning and transformatio
    git clone https://github.com/micahgcnavia/Home_Visits_Public_Health_RJ.git
    ```
 2. Run `cleaning.py` to get the clean table ready for analysis
-3. Check the final dashboard in the file `dashboard.pbix`
+3. Check the final dashboard directly by downloading the file `dashboard.pbix` or visit the [report site](https://app.powerbi.com/reportEmbed?reportId=d145b337-32d0-4f60-bd09-98865e847c13&autoAuth=true&ctid=8a425f8e-ceea-4039-8816-b9cb7af9f4cd) (you might need a Microsoft Power BI account to open the dashboard).
+
+### Citation 📰
+
+If you feel like using this data in your own projects, please consider citing this repository! Thank you! :)
